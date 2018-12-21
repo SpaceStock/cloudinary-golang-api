@@ -105,7 +105,7 @@ func (s *Service) DefaultUploadURI() *url.URL {
 	return s.uploadURI
 }
 
-func (s *Service) UploadFile(fullPath string, data io.Reader) (string, error) {
+func (s *Service) UploadFile(fullPath string, path string, data io.Reader) (string, error) {
 	fi, err := os.Stat(fullPath)
 	if err != nil {
 		log.Println(err)
@@ -115,7 +115,7 @@ func (s *Service) UploadFile(fullPath string, data io.Reader) (string, error) {
 			return fullPath, nil
 		}
 	}
-
+	path = "building"
 	buf := new(bytes.Buffer)
 	w := multipart.NewWriter(buf)
 
@@ -132,6 +132,12 @@ func (s *Service) UploadFile(fullPath string, data io.Reader) (string, error) {
 	}
 	ak.Write([]byte(s.apiKey))
 
+	pt, err := w.CreateFormField("folder")
+	if err != nil {
+		return fullPath, err
+	}
+	pt.Write([]byte(path))
+
 	timestamp := strconv.FormatInt(time.Now().Unix(), 10)
 	ts, err := w.CreateFormField("timestamp")
 	if err != nil {
@@ -142,6 +148,7 @@ func (s *Service) UploadFile(fullPath string, data io.Reader) (string, error) {
 	hash := sha1.New()
 	part := fmt.Sprintf("timestamp=%s%s", timestamp, s.apiSecret)
 	part = fmt.Sprintf("public_id=%s&%s", publicId, part)
+	part = fmt.Sprintf("folder=%s&%s", path, part)
 	io.WriteString(hash, part)
 	signature := fmt.Sprintf("%x", hash.Sum(nil))
 
@@ -201,12 +208,12 @@ func (s *Service) UploadFile(fullPath string, data io.Reader) (string, error) {
 			return fullPath, err
 		}
 
-		return upInfo.PublicId, nil
+		return fmt.Sprintf(path, "/", upInfo.PublicId), nil
 	} else {
 		return fullPath, errors.New("Request error:" + resp.Status)
 	}
 }
 
 func (s *Service) Url(publicId string, namedTransformation string) string {
-	return fmt.Sprintf("http://%s-%s/image/upload/%s/%s.jpg", s.cloudName, baseResource, namedTransformation, publicId)
+	return fmt.Sprintf("https://%s/%s/image/upload/%s/%s.jpg", baseResource, s.cloudName, namedTransformation, publicId)
 }
