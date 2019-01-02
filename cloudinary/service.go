@@ -208,7 +208,7 @@ func (s *Service) UploadFile(fullPath string, path string, data io.Reader) (stri
 			return fullPath, err
 		}
 
-		return fmt.Sprintf(path, "/", upInfo.PublicId), nil
+		return upInfo.PublicId, nil
 	} else {
 		return fullPath, errors.New("Request error:" + resp.Status)
 	}
