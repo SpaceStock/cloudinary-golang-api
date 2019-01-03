@@ -119,7 +119,7 @@ func (s *Service) UploadFile(fullPath string, path string, data io.Reader) (stri
 	buf := new(bytes.Buffer)
 	w := multipart.NewWriter(buf)
 
-	publicId := "cat-" + time.Now().Format("20060102150405")
+	publicId := "cat-" + time.Now().Format("20060102150405.000000000")
 	pi, err := w.CreateFormField("public_id")
 	if err != nil {
 		return fullPath, err
