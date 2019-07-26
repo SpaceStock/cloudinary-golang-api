@@ -219,20 +219,23 @@ func (s *Service) Url(publicId string, namedTransformation string) string {
 }
 
 
-func (s *Service) ResourceInfo(publicIds []string) interface{} {
+func (s *Service) ResourceInfo(publicIds []string) (resourceList map[string][]Resource)  {
 	
 	var paramArr []string
-	for i:=range publicIds{
-		paramArr=append(paramArr,fmt.Sprintf("public_ids[]=%s",publicIds[i]))
+	for i := range publicIds {
+		paramArr = append(paramArr, fmt.Sprintf("public_ids[]=%s", publicIds[i]))
 	}
-	param:=strings.Join(paramArr,"&")	
-	url:=fmt.Sprintf("https://%s/%s/image/private?max_results=500&%s", baseUploadUrl, s.cloudName, param)
-	
+	param := strings.Join(paramArr, "&")
+	url := fmt.Sprintf("%s/%s/resources/image?max_results=500&%s", baseRetrieveUrl, s.cloudName, param)
 	resp, err := http.Get(url)
-if err != nil {
-	// handle error
-}
-defer resp.Body.Close()
-body, err := ioutil.ReadAll(resp.Body)
-	return  body
+	//resp, err := http.DefaultClient.Do(req)
+	if err != nil {
+		log.Fatalln(err)
+		// handle error
+	}
+	defer resp.Body.Close()
+	body, err := ioutil.ReadAll(resp.Body)
+	json.Unmarshal(body, &resourceList)
+	fmt.Println(url, resourceList["resources"][0].Width)
+	return resourceList
 }
