@@ -20,6 +20,7 @@ import (
 
 const (
 	baseUploadUrl   = "http://api.cloudinary.com/v1_1"
+	baseRetrieveUrl   = "https://483888322616633:1n5DDFDVfr5CXYT_htwUIU4GIO0@api.cloudinary.com/v1_1"
 	baseResource    = "res.cloudinary.com"
 	baseResourceUrl = "http://res.cloudinary.com"
 	imageType       = "image"
