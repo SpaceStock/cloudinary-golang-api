@@ -217,3 +217,22 @@ func (s *Service) UploadFile(fullPath string, path string, data io.Reader) (stri
 func (s *Service) Url(publicId string, namedTransformation string) string {
 	return fmt.Sprintf("https://%s/%s/image/upload/%s/%s.jpg", baseResource, s.cloudName, namedTransformation, publicId)
 }
+
+
+func (s *Service) ResourceInfo(publicIds []string) interface{} {
+	
+	var paramArr []string
+	for i:=range publicIds{
+		paramArr=append(paramArr,fmt.Sprintf("public_ids[]=%s",publicIds[i]))
+	}
+	param:=strings.Join(paramArr,"&")	
+	url:=fmt.Sprintf("https://%s/%s/image/private?max_results=500&%s", baseUploadUrl, s.cloudName, param)
+	
+	resp, err := http.Get(url)
+if err != nil {
+	// handle error
+}
+defer resp.Body.Close()
+body, err := ioutil.ReadAll(resp.Body)
+	return  body
+}
