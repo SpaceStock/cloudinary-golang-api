@@ -238,6 +238,5 @@ func (s *Service) ResourceInfo(publicIds []string) (resourceList map[string][]Re
 	defer resp.Body.Close()
 	body, err := ioutil.ReadAll(resp.Body)
 	json.Unmarshal(body, &resourceList)
-	fmt.Println(url, resourceList["resources"][0].Width)
 	return resourceList
 }
