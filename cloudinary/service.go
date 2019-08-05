@@ -20,7 +20,6 @@ import (
 
 const (
 	baseUploadUrl   = "http://api.cloudinary.com/v1_1"
-	baseRetrieveUrl   = "https://483888322616633:1n5DDFDVfr5CXYT_htwUIU4GIO0@api.cloudinary.com/v1_1"
 	baseResource    = "res.cloudinary.com"
 	baseResourceUrl = "http://res.cloudinary.com"
 	imageType       = "image"
@@ -45,9 +44,9 @@ type Resource struct {
 	Version      string `json:"version"`
 	ResourceType string `json:"resource_type"`
 	Format       string `json:"format"`
-	Size         string `json:"bytes"`
-	Width        string `json:"width"`
-	Height       string `json:"height"`
+	Size         int64 `json:"bytes"`
+	Width        int64 `json:"width"`
+	Height       int64 `json:"height"`
 	Url          string `json:"url"`
 	SecureUrl    string `json:"secure_url"`
 }
@@ -222,7 +221,11 @@ func (s *Service) Url(publicId string, namedTransformation string) string {
 
 
 func (s *Service) ResourceInfo(publicIds []string) (resourceList map[string][]Resource)  {
-	
+	baseRetrieveUrl := os.Getenv("CLOUDINARY_RETRIEVE_URL")
+	if baseRetrieveUrl == "" {
+		fmt.Println("CLOUDINARY_RETRIEVE_URL is not set")
+		return nil
+	} 
 	var paramArr []string
 	for i := range publicIds {
 		paramArr = append(paramArr, fmt.Sprintf("public_ids[]=%s", publicIds[i]))
